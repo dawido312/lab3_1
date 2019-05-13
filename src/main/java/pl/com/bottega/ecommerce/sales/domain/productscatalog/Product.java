@@ -21,6 +21,10 @@ public class Product extends BaseAggregateRoot {
         this.productType = productType;
     }
 
+    public Product() {
+
+    }
+
     public boolean isAvailable() {
         return !isRemoved();
     }

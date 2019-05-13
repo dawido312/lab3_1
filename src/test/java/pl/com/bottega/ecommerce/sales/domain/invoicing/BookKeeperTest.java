@@ -25,16 +25,19 @@ public class BookKeeperTest {
     BookKeeper bookKeeper;
     InvoiceRequest invoiceRequest;
     ProductData productData;
-    @Mock TaxPolicy taxPolicy;
+    @Mock
+    TaxPolicy taxPolicy;
 
-    @Before public void init() {
+    @Before
+    public void init() {
         bookKeeper = new BookKeeper(new InvoiceFactory());
         invoiceRequest = new InvoiceRequest(new ClientData());
         productData = new ProductData(Id.generate(), new Money(BigDecimal.ONE), "product", ProductType.STANDARD, new Date());
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithOneItemReturnOneInvoice() {
+    @Test
+    public void issuance_testIfInvoiceRequestWithOneItemReturnOneInvoice() {
         RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
         invoiceRequest.add(requestItem);
 
@@ -44,7 +47,8 @@ public class BookKeeperTest {
         assertThat(invoice.getItems().size(), is(1));
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithTwoItemsInvokeCalculateTaxMethodTwice() {
+    @Test
+    public void issuance_testIfInvoiceRequestWithTwoItemsInvokeCalculateTaxMethodTwice() {
         RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
         RequestItem requestItem12 = new RequestItem(productData, 10, new Money(new BigDecimal(20)));
         invoiceRequest.add(requestItem);
@@ -56,8 +60,8 @@ public class BookKeeperTest {
 
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithOneItemInvokeCalculateTaxMethodOnce()
-    {
+    @Test
+    public void issuance_testIfInvoiceRequestWithOneItemInvokeCalculateTaxMethodOnce() {
         RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
         invoiceRequest.add(requestItem);
 
@@ -66,8 +70,8 @@ public class BookKeeperTest {
         verify(taxPolicy, times(1)).calculateTax(any(ProductType.class), any(Money.class));
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithTwoItemsReturnTwoInvoices()
-    {
+    @Test
+    public void issuance_testIfInvoiceRequestWithTwoItemsReturnTwoInvoices() {
         RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
         RequestItem requestItem2 = new RequestItem(productData, 10, new Money(new BigDecimal(20)));
         invoiceRequest.add(requestItem);
@@ -79,18 +83,16 @@ public class BookKeeperTest {
         assertThat(invoice.getItems().size(), is(2));
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithNoItemsReturnAnything()
-    {
+    @Test
+    public void issuance_testIfInvoiceRequestWithNoItemsReturnAnything() {
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(1)), ""));
         Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
 
         assertThat(invoice.getItems().size(), is(0));
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithNoItemsInvokeCalculateTax()
-    {
-        RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
-
+    @Test
+    public void issuance_testIfInvoiceRequestWithNoItemsInvokeCalculateTax() {
         when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(300)), ""));
         Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
         verify(taxPolicy, times(0)).calculateTax(any(ProductType.class), any(Money.class));
