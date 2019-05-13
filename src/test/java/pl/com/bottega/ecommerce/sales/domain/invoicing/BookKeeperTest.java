@@ -44,16 +44,25 @@ public class BookKeeperTest {
         assertThat(invoice.getItems().size(), is(1));
     }
 
-    @Test public void issuance_testIfInvoiceRequestWithTwoItemsInvokeCalculateTaxMethodTwice()
-    {
+    @Test public void issuance_testIfInvoiceRequestWithTwoItemsInvokeCalculateTaxMethodTwice() {
         RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
         RequestItem requestItem12 = new RequestItem(productData, 10, new Money(new BigDecimal(20)));
         invoiceRequest.add(requestItem);
         invoiceRequest.add(requestItem12);
 
-        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(300)),""));
+        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(300)), ""));
         Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
         verify(taxPolicy, times(2)).calculateTax(any(ProductType.class), any(Money.class));
 
+    }
+
+    @Test public void issuance_testIfInvoiceRequestWithOneItemInvokeCalculateTaxMethodOnce()
+    {
+        RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
+        invoiceRequest.add(requestItem);
+
+        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(300)), ""));
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+        verify(taxPolicy, times(1)).calculateTax(any(ProductType.class), any(Money.class));
     }
 }
