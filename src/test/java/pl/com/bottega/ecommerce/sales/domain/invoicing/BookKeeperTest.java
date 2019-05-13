@@ -78,4 +78,21 @@ public class BookKeeperTest {
 
         assertThat(invoice.getItems().size(), is(2));
     }
+
+    @Test public void issuance_testIfInvoiceRequestWithNoItemsReturnAnything()
+    {
+        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(1)), ""));
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        assertThat(invoice.getItems().size(), is(0));
+    }
+
+    @Test public void issuance_testIfInvoiceRequestWithNoItemsInvokeCalculateTax()
+    {
+        RequestItem requestItem = new RequestItem(productData, 10, new Money(new BigDecimal(10)));
+
+        when(taxPolicy.calculateTax(any(ProductType.class), any(Money.class))).thenReturn(new Tax(new Money(new BigDecimal(300)), ""));
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+        verify(taxPolicy, times(0)).calculateTax(any(ProductType.class), any(Money.class));
+    }
 }
