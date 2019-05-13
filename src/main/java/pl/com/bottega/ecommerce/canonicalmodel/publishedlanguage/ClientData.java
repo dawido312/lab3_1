@@ -23,7 +23,7 @@ public class ClientData {
 	
 	private String name;
 
-	private ClientData(){}
+	public ClientData(){}
 	
 	public ClientData(Id id, String name) {
 		this.id = id;

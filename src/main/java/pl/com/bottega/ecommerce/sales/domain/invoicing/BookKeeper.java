@@ -35,6 +35,7 @@ public class BookKeeper {
 					item.getQuantity(), net, tax);
 			invoice.addItem(invoiceLine);
 		}
+		
 
 		return invoice;
 	}
